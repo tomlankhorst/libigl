@@ -2,11 +2,20 @@
 # compilation flags, as well as installation rules for the target. Target sources and dependencies
 # need to be added separately.
 function(igl_add_library module_name)
+    # Check if category is `copyleft` or `nonfree`
+    if(${module_name} MATCHES "^igl_copyleft")
+        set(suffix "_copyleft")
+    elseif(${module_name} MATCHES "^igl_nonfree")
+        set(suffix "_nonfree")
+    else()
+        set(suffix "")
+    endif()
+
     # Check module name
     if(NOT ${module_name} MATCHES "^igl_")
         message(FATAL_ERROR "Libigl module name should start with 'igl_'")
     endif()
-    string(REPLACE "igl_" "" module_shortname ${module_name})
+    string(REPLACE "igl${suffix}_" "" module_shortname ${module_name})
 
     # Define target
     if(LIBIGL_USE_STATIC_LIBRARY)
@@ -16,8 +25,8 @@ function(igl_add_library module_name)
     endif()
 
     # Alias target name
-    message(STATUS "Creating target: igl::${module_shortname} (${module_name})")
-    add_library(igl::${module_shortname} ALIAS ${module_name})
+    message(STATUS "Creating target: igl${suffix}::${module_shortname} (${module_name})")
+    add_library(igl${suffix}::${module_shortname} ALIAS ${module_name})
 
     # Compile definitions
     if(LIBIGL_USE_STATIC_LIBRARY)
@@ -67,7 +76,7 @@ function(igl_add_library module_name)
 
     include(GNUInstallDirs)
     install(TARGETS ${module_name}
-        EXPORT LibiglTargets
+        EXPORT LibiglTargets${suffix}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
                 COMPONENT LibiglRuntime
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

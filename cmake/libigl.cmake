@@ -19,4 +19,6 @@ endif()
 include(igl_windows)
 
 # Libigl modules
-include(igl/modules/core)
+include(modules/core)
+include(modules/copyleft/core)
+include(modules/copyleft/cgal)
